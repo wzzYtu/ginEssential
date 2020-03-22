@@ -3,6 +3,7 @@ package controller
 import (
 	"github.com/gin-gonic/gin"
 	"golang.org/x/crypto/bcrypt"
+	"log"
 	"net/http"
 	"ytu/ginessential/common"
 	"ytu/ginessential/model"
@@ -35,12 +36,21 @@ func Login(c *gin.Context) {
 		return
 	}
 	// 发送token
-	token := "11"
+	token, err := common.ReleaseTocken(user)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"code": 500, "msg": "系统异常"})
+		log.Print("token generate err:", err)
+		return
+	}
 	// 返回结果
 	c.JSON(http.StatusOK, gin.H{
 		"code": 200,
 		"data": gin.H{"token": token},
 		"msg":  "登录成功",
 	})
+}
 
+func Info(c *gin.Context) {
+	user, _ := c.Get("user")
+	c.JSON(http.StatusOK, gin.H{"code": 200, "data": gin.H{"user": user}})
 }

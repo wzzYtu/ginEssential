@@ -13,6 +13,7 @@ type Claims struct {
 	jwt.StandardClaims
 }
 
+// ReleaseTocken 生成JWT
 func ReleaseTocken(user model.User) (string, error) {
 	expirationTime := 7 * 24 * time.Hour
 	claims := &Claims{
@@ -20,7 +21,7 @@ func ReleaseTocken(user model.User) (string, error) {
 		StandardClaims: jwt.StandardClaims{
 			ExpiresAt: time.Now().Add(expirationTime).Unix(),
 			Issuer:    "wzzYtu",
-			Subject:   "user tocken",
+			Subject:   "user token",
 		},
 	}
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
@@ -31,6 +32,7 @@ func ReleaseTocken(user model.User) (string, error) {
 	return tokenString, nil
 }
 
+// ParseToken 解析JWT
 func ParseToken(tokenString string) (*jwt.Token, *Claims, error) {
 	claims := &Claims{}
 	token, err := jwt.ParseWithClaims(tokenString, claims, func(token *jwt.Token) (i interface{}, e error) {

@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"ytu/ginessential/common"
 	"ytu/ginessential/model"
+	"ytu/ginessential/response"
 )
 
 func UserRegister(c *gin.Context) {
@@ -17,47 +18,32 @@ func UserRegister(c *gin.Context) {
 	password := c.PostForm("password")
 	// 数据验证
 	if len(telephone) != 11 {
-		c.JSON(http.StatusUnprocessableEntity, gin.H{
-			"code": 422,
-			"msg":  "手机号必须为11位",
-		})
+		response.Response(c, http.StatusUnprocessableEntity, 422, nil, "手机号必须为11位")
 		return
 	}
 	if len(password) < 6 {
-		c.JSON(http.StatusUnprocessableEntity, gin.H{
-			"code": 422,
-			"msg":  "密码不能少于6位",
-		})
+		response.Response(c, http.StatusUnprocessableEntity, 422, nil, "密码不能少于6位")
 		return
 	}
 	if len(name) < 3 {
-		c.JSON(http.StatusUnprocessableEntity, gin.H{
-			"code": 422,
-			"msg":  "名称不能少于3位",
-		})
+		response.Response(c, http.StatusUnprocessableEntity, 422, nil, "名称不能少于3位")
 		return
 	}
 	// 判断手机号是否存在
 	if isTelephoneExist(DB, telephone) == false {
-		c.JSON(http.StatusUnprocessableEntity, gin.H{
-			"code": 422,
-			"msg":  "用户已存在",
-		})
+		response.Response(c, http.StatusUnprocessableEntity, 422, nil, "用户已存在")
 		return
 	}
 	// 创建用户
 	hasePassword, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
 	if err != nil {
-		c.JSON(500, gin.H{"code": 500, "msg": "加密错误"})
+		response.Response(c, http.StatusInternalServerError, 500, nil, "加密错误")
 		return
 	}
 	newUser := model.User{Name: name, Telephone: telephone, Password: string(hasePassword)}
 	DB.Create(&newUser)
 	//返回结果
-	c.JSON(http.StatusOK, gin.H{
-		"code": 200,
-		"msg":  "注册成功",
-	})
+	response.Success(c, nil, "注册成功")
 }
 
 func isTelephoneExist(DB *gorm.DB, telephone string) bool {

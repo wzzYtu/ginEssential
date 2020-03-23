@@ -18,7 +18,6 @@ func InitDB() *gorm.DB {
 	username := viper.GetString("datasource.username")
 	password := viper.GetString("datasource.password")
 	charset := viper.GetString("datasource.charset")
-	//db, err := gorm.Open("mysql", "root:123456@tcp(127.0.0.1:3306)/essential?charset=utf8&parseTime=True&loc=Local")
 	args := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?charset=%s&parseTime=True&loc=Local", username, password, host, port, database, charset)
 	db, err := gorm.Open(driverName, args)
 	if err != nil {

@@ -13,9 +13,14 @@ import (
 func UserRegister(c *gin.Context) {
 	DB := common.GetDB()
 	// 获取参数
-	name := c.PostForm("name")
-	telephone := c.PostForm("telephone")
-	password := c.PostForm("password")
+	var user = model.User{}
+	err := c.BindJSON(&user)
+	if err != nil {
+		panic("BingJSON err")
+	}
+	name := user.Name
+	telephone := user.Telephone
+	password := user.Password
 	// 数据验证
 	if len(telephone) != 11 {
 		response.Response(c, http.StatusUnprocessableEntity, 422, nil, "手机号必须为11位")
